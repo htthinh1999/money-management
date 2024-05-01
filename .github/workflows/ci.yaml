@@ -9,7 +9,7 @@ jobs:
   deploy:
     if: always()
     name: Build, Push Docker image & Deploy Cloud Run service
-    uses: htthinh1999/reusable-workflow/ci-cloudrun.yaml@main
+    uses: htthinh1999/reusable-workflow/.github/workflows/ci-cloudrun.yaml@main
     with:
       gcp_project_id: keycode-mon
       gcp_docker_registry: asia-southeast1-docker.pkg.dev
