@@ -21,4 +21,4 @@ jobs:
       cloud_run_deploy: true
       environment: production
     secrets:
-      GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_GHA_KEYCODE_MON_CREDS }}
+      GOOGLE_CREDENTIALS: "${{ secrets.GCP_TF_GHA_KEYCODE_MON_CREDS }}"
