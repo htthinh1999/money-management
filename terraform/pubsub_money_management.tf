@@ -1,6 +1,6 @@
 module "pubsub_money_management" {
   source     = "terraform-google-modules/pubsub/google"
-  version    = "~> 5.0"
+  version    = "~> 6.0"
   topic      = "TOPIC_MONEY_MANAGEMENT"
   project_id = var.project_id
   push_subscriptions = [
