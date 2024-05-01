@@ -84,3 +84,8 @@ resource "google_cloud_run_v2_service_iam_member" "money_management_run_all_user
   member     = "allUsers"
   depends_on = [google_cloud_run_v2_service.money_management_service]
 }
+
+
+locals {
+  money_management_url = google_cloud_run_v2_service.money_management_service.uri
+}
