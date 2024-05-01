@@ -1,0 +1,18 @@
+# Exclude Python bytecode files
+*.pyc
+
+# Exclude IDE directories
+.vscode/
+.idea/
+
+# Exclude local development files
+venv/
+__pycache__/
+
+# Exclude Docker-related files
+Dockerfile
+.dockerignore
+
+# Exclude any sensitive or unnecessary files
+.github/
+terraform/

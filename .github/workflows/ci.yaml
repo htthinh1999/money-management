@@ -1,0 +1,25 @@
+name: Deploy Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: always()
+    name: Build, Push Docker image & Deploy Cloud Run service
+    uses: htthinh1999/reusable-workflow/ci-cloudrun.yaml@main
+    with:
+      gcp_project_id: keycode-mon
+      gcp_docker_registry: asia-southeast1-docker.pkg.dev
+      gcp_repository: repository
+      docker_image_name: money-management
+      docker_file: Dockerfile
+      cloud_run_name: money-management
+      cloud_run_region: asia-southeast1
+      create_release: true
+      cloud_run_deploy: true
+      environment: production
+    secrets:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
