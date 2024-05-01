@@ -6,7 +6,7 @@ on:
       - "terraform/**"
       - ".github/workflows/terraform.yaml"
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - "terraform/**"
