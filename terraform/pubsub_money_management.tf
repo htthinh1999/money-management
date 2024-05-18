@@ -16,3 +16,10 @@ module "pubsub_money_management" {
     }
   ]
 }
+
+resource "google_pubsub_topic_iam_member" "member" {
+  project = var.project_id
+  topic   = "TOPIC_MONEY_MANAGEMENT"
+  role    = "roles/pubsub.publisher"
+  member  = "allAuthenticatedUsers"
+}
