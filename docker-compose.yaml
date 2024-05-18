@@ -1,0 +1,12 @@
+version: "3"
+services:
+  money-management:
+    container_name: money-management
+    image: money-management
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
