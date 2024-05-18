@@ -9,3 +9,15 @@ resource "google_secret_manager_secret" "google_credentials" {
     }
   }
 }
+
+resource "google_secret_manager_secret" "google_credentials" {
+  project   = var.project_id
+  secret_id = "GOOGLE_TOKEN"
+  replication {
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
+  }
+}
