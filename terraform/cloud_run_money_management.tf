@@ -31,7 +31,7 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       max_instance_count = 10
     }
     containers {
-      image = "asia-southeast1-docker.pkg.dev/keycode-mon/repository/money-management:0.0.1"
+      image = "asia-southeast1-docker.pkg.dev/keycode-mon/repository/money-management:0.0.2"
       name  = "money-management"
       ports {
         container_port = 8080
@@ -41,6 +41,21 @@ resource "google_cloud_run_v2_service" "money_management_service" {
           memory = "512Mi"
           cpu    = 1
         }
+      }
+
+      env {
+        name  = "GOOGLE_CREDENTIALS_FILE"
+        value = "credentials.json"
+      }
+
+      env {
+        name  = "GOOGLE_TOKEN_FILE"
+        value = "token.pickle"
+      }
+
+      env {
+        name  = "GOOGLE_PUBSUB_TOPIC"
+        value = "projects/keycode-mon/topics/TOPIC_MONEY_MANAGEMENT"
       }
 
       env {
