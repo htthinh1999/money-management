@@ -1,11 +1,10 @@
 import os
 import base64
-import pickle
-import datetime
 import json
 import requests
 import logging
 from flask import Flask, request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -32,18 +31,17 @@ def build_gmail_service():
     creds = None
     if os.path.exists(GOOGLE_TOKEN_FILE):
         with open(GOOGLE_TOKEN_FILE, 'rb') as token:
-            creds = pickle.load(token)
+            creds = Credentials.from_authorized_user_file(GOOGLE_TOKEN_FILE, GMAIL_SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 GOOGLE_CREDENTIALS_FILE, GMAIL_SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open(GOOGLE_TOKEN_FILE, 'wb') as token:
-            pickle.dump(creds, token)
-    
-    gmail = build('gmail', 'v1', credentials=creds)
+            creds = flow.run_local_server(port=8081,open_browser=False)
+        with open(GOOGLE_TOKEN_FILE, "w") as token:
+            token.write(creds.to_json())
+    gmail = build('gmail', 'v1', credentials=creds, cache_discovery=False)
     return gmail
 
 @app.route('/watch', methods=['GET'])
@@ -57,6 +55,7 @@ def watch():
     watch = gmail.users().watch(userId='me', body=request).execute()
     history_id = watch['historyId']
     app.logger.info(f"Watch started with history ID: {history_id}")
+    return f"Watch started with history ID: {history_id}", 200
 
 @app.route('/webhook', methods=['POST'])
 def receive_pubsub_message():
