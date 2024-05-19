@@ -14,11 +14,12 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO,format='[%(asctime)s] [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %I:%M:%S')
 
 # Load environment variables
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
-GOOGLE_CREDENTIALS_FILE = os.environ.get('GOOGLE_CREDENTIALS_FILE')
-GOOGLE_TOKEN_FILE = os.environ.get('GOOGLE_TOKEN_FILE')
-GOOGLE_PUBSUB_TOPIC = os.environ.get('GOOGLE_PUBSUB_TOPIC') # projects/myproject/topics/mytopic
+env_vars = os.environ
+TELEGRAM_BOT_TOKEN = env_vars.get('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = env_vars.get('TELEGRAM_CHAT_ID')
+GOOGLE_CREDENTIALS_FILE = env_vars.get('GOOGLE_CREDENTIALS_FILE')
+GOOGLE_TOKEN_FILE = env_vars.get('GOOGLE_TOKEN_FILE')
+GOOGLE_PUBSUB_TOPIC = env_vars.get('GOOGLE_PUBSUB_TOPIC')
 
 MAX_MESSAGE_LENGTH = 4000
 GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
@@ -87,20 +88,36 @@ def process_gmail_data(gmail_data):
 
     histories = gmail.users().history().list(userId='me', startHistoryId=history_id).execute()
     
-    # app.logger.info(f"Processing histories: {histories}")
+    app.logger.info(f"Processing histories: {histories}")
     if 'history' not in histories:
         # no new messages
         return
     
     for history in histories['history']:
+        if 'messagesAdded' not in history:
+            continue
         message_added = history['messagesAdded']
         for message in message_added:
+            if 'message' not in message:
+                continue
+            if 'id' not in message['message']:
+                continue
             message_id = message['message']['id']
             email = gmail.users().messages().get(userId='me', id=message_id).execute()
             # app.logger.info(f"Processing email: {email}")
+            if 'snippet' not in email:
+                continue
             snippet = email['snippet']
             subject = ''
+            if 'headers' not in email['payload']:
+                continue
+            if 'headers' not in email['payload']:
+                continue
             for header in email['payload']['headers']:
+                if 'name' not in header:
+                    continue
+                if 'value' not in header:
+                    continue
                 if header['name'] == 'Subject':
                     subject = header['value']
                     break
