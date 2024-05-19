@@ -56,6 +56,7 @@ def watch():
     gmail = build_gmail_service()
     watch = gmail.users().watch(userId='me', body=request).execute()
     history_id = watch['historyId']
+    global CURRENT_HISTORY_ID
     CURRENT_HISTORY_ID = history_id
     app.logger.info(f"Watch started with history ID: {history_id}")
     return f"Watch started with history ID: {history_id}", 200
