@@ -1,6 +1,7 @@
 import os
 import base64
 import json
+import time
 import requests
 import logging
 from flask import Flask, request
@@ -23,7 +24,7 @@ GOOGLE_PUBSUB_TOPIC = env_vars.get('GOOGLE_PUBSUB_TOPIC')
 
 MAX_MESSAGE_LENGTH = 4000
 GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
-CURRENT_HISTORY_ID = 0
+CURRENT_HISTORY_ID = 3151956
 
 @app.route('/healthz', methods=['GET'])
 def health_check():
@@ -111,12 +112,10 @@ def process_gmail_data(gmail_data):
                 continue
             message_id = message['message']['id']
             email = gmail.users().messages().get(userId='me', id=message_id).execute()
-            app.logger.info(f"Processing email: {email}")
-            if 'snippet' not in email:
-                continue
-            snippet = email['snippet']
+            # app.logger.info(f"Processing email: {email}")
             subject = ''
-            if 'headers' not in email['payload']:
+            from_email = ''
+            if 'payload' not in email:
                 continue
             if 'headers' not in email['payload']:
                 continue
@@ -128,18 +127,42 @@ def process_gmail_data(gmail_data):
                 if header['name'] == 'Subject':
                     subject = header['value']
                     break
-            # message = f"Subject: {subject}; Snippet: {snippet}"
+                if header['name'] == 'From':
+                    from_email = header['value']
+            if from_email != "VCBDigibank@info.vietcombank.com.vn" or 'Biên lai' not in subject:
+                continue
+            
+            if 'body' not in email['payload']:
+                continue
+            if 'data' not in email['payload']['body']:
+                continue
+            mail_body = email['payload']['body']['data']
+            mail_html = base64.urlsafe_b64decode(mail_body).decode('utf-8')
+
+            # find first text match 'VND' in html
+            cost_end_pos = mail_html.find('VND')
+            # find last text match '>' in html end with 'VND'
+            cost_start_pos = mail_html.rfind('>', 0, cost_end_pos)
+            # get cost value
+            cost = mail_html[cost_start_pos+1:cost_end_pos]
+            # convert cost to number
+            cost = int(cost.replace(',', ''))
+            # convert cost to string with dot separator
+            cost = "{:,}".format(cost)
+            message = f"{subject}: <b>{cost}</b> VND"
             app.logger.info(message)
             if len(message) > 4096:
                 for x in range(0, len(message), 4096):
                     send_telegram_message(message[x:x+4096])
+                    # delay 1 second to avoid telegram rate limit
+                    time.sleep(1)
                 else:
                     send_telegram_message(message)
             else:
                 send_telegram_message(message)
 
 def send_telegram_message(message):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage?parse_mode=HTML"
     params = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message
