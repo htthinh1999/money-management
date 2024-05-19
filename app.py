@@ -63,7 +63,7 @@ def receive_pubsub_message():
         envelope = request.get_json()
         if envelope and 'message' in envelope:
             pubsub_message = envelope['message']
-            data = base64.b64decode(pubsub_message['data'])
+            data = base64.b64decode(pubsub_message['data']).decode("utf-8")
             message = f"Data from Pub/Sub: {data}"
             app.logger.info(message)
             # Assuming the data is JSON
