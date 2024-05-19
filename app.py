@@ -88,11 +88,11 @@ def process_gmail_data(gmail_data):
     # Fetch the email details
     gmail = build_gmail_service()
 
+    global CURRENT_HISTORY_ID
     if CURRENT_HISTORY_ID == 0:
         watch()
 
     histories = gmail.users().history().list(userId='me', startHistoryId=CURRENT_HISTORY_ID).execute()
-    global CURRENT_HISTORY_ID
     CURRENT_HISTORY_ID = history_id
 
     app.logger.info(f"Processing histories: {histories} with history ID: {CURRENT_HISTORY_ID}")
