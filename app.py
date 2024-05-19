@@ -128,9 +128,15 @@ def process_gmail_data(gmail_data):
                 if header['name'] == 'Subject':
                     subject = header['value']
                     break
-            message = f"Subject: {subject}; Snippet: {snippet}"
+            # message = f"Subject: {subject}; Snippet: {snippet}"
             app.logger.info(message)
-            send_telegram_message(message)
+            if len(message) > 4096:
+                for x in range(0, len(message), 4096):
+                    send_telegram_message(message[x:x+4096])
+                else:
+                    send_telegram_message(message)
+            else:
+                send_telegram_message(message)
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
