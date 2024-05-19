@@ -111,8 +111,8 @@ def process_gmail_data(gmail_data):
 def send_telegram_message(message):#
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     params = {
-        'chat_id': TELEGRAM_CHAT_ID,
-        'text': message
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message
     }
     response = requests.post(url, json=params)
     if response.status_code != 200:
