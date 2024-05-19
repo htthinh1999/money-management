@@ -23,6 +23,7 @@ GOOGLE_PUBSUB_TOPIC = env_vars.get('GOOGLE_PUBSUB_TOPIC')
 
 MAX_MESSAGE_LENGTH = 4000
 GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
+CURRENT_HISTORY_ID = 0
 
 @app.route('/healthz', methods=['GET'])
 def health_check():
@@ -55,6 +56,7 @@ def watch():
     gmail = build_gmail_service()
     watch = gmail.users().watch(userId='me', body=request).execute()
     history_id = watch['historyId']
+    CURRENT_HISTORY_ID = history_id
     app.logger.info(f"Watch started with history ID: {history_id}")
     return f"Watch started with history ID: {history_id}", 200
 
@@ -85,8 +87,9 @@ def process_gmail_data(gmail_data):
     # Fetch the email details
     gmail = build_gmail_service()
 
-    histories = gmail.users().history().list(userId='me', startHistoryId=history_id).execute()
-    
+    histories = gmail.users().history().list(userId='me', startHistoryId=CURRENT_HISTORY_ID).execute()
+    CURRENT_HISTORY_ID = history_id
+
     app.logger.info(f"Processing histories: {histories}")
     if 'history' not in histories:
         # no new messages
