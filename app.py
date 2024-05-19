@@ -87,6 +87,9 @@ def process_gmail_data(gmail_data):
     # Fetch the email details
     gmail = build_gmail_service()
 
+    if CURRENT_HISTORY_ID == 0:
+        watch()
+
     histories = gmail.users().history().list(userId='me', startHistoryId=CURRENT_HISTORY_ID).execute()
     CURRENT_HISTORY_ID = history_id
 
