@@ -128,7 +128,7 @@ def process_gmail_data(gmail_data):
                 if header['name'] == 'Subject':
                     subject = header['value']
                     break
-            message = f"Subject: {subject}\nSnippet: {snippet}"
+            message = f"Subject: {subject}; Snippet: {snippet}"
             app.logger.info(message)
             send_telegram_message(message)
 
