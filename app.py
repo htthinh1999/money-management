@@ -103,7 +103,7 @@ def process_gmail_data(gmail_data):
                 continue
             message_id = message['message']['id']
             email = gmail.users().messages().get(userId='me', id=message_id).execute()
-            # app.logger.info(f"Processing email: {email}")
+            app.logger.info(f"Processing email: {email}")
             if 'snippet' not in email:
                 continue
             snippet = email['snippet']
