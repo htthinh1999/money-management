@@ -74,7 +74,7 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       }
 
       env {
-        name = "CHAT_ID"
+        name = "TELEGRAM_CHAT_ID"
         value_source {
           secret_key_ref {
             secret  = data.google_secret_manager_secret_version.telegram_money_bot_chat_id.secret
