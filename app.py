@@ -24,7 +24,7 @@ GOOGLE_PUBSUB_TOPIC = env_vars.get('GOOGLE_PUBSUB_TOPIC')
 
 MAX_MESSAGE_LENGTH = 4000
 GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
-CURRENT_HISTORY_ID = 3151956
+CURRENT_HISTORY_ID = 0
 
 @app.route('/healthz', methods=['GET'])
 def health_check():
