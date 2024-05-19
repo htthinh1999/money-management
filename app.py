@@ -92,6 +92,7 @@ def process_gmail_data(gmail_data):
         watch()
 
     histories = gmail.users().history().list(userId='me', startHistoryId=CURRENT_HISTORY_ID).execute()
+    global CURRENT_HISTORY_ID
     CURRENT_HISTORY_ID = history_id
 
     app.logger.info(f"Processing histories: {histories} with history ID: {CURRENT_HISTORY_ID}")
