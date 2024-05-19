@@ -87,16 +87,17 @@ def process_gmail_data(gmail_data):
 
     histories = gmail.users().history().list(userId='me', startHistoryId=history_id).execute()
     
-    app.logger.info(f"Processing histories: {histories}")
-
+    # app.logger.info(f"Processing histories: {histories}")
+    if 'history' not in histories:
+        # no new messages
+        return
+    
     for history in histories['history']:
         message_added = history['messagesAdded']
         for message in message_added:
             message_id = message['message']['id']
             email = gmail.users().messages().get(userId='me', id=message_id).execute()
-            
-            app.logger.info(f"Processing email: {email}")
-
+            # app.logger.info(f"Processing email: {email}")
             snippet = email['snippet']
             subject = ''
             for header in email['payload']['headers']:
@@ -107,7 +108,7 @@ def process_gmail_data(gmail_data):
             app.logger.info(message)
             send_telegram_message(message)
 
-def send_telegram_message(message):
+def send_telegram_message(message):#
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     params = {
         'chat_id': TELEGRAM_CHAT_ID,
