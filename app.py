@@ -90,7 +90,7 @@ def process_gmail_data(gmail_data):
     histories = gmail.users().history().list(userId='me', startHistoryId=CURRENT_HISTORY_ID).execute()
     CURRENT_HISTORY_ID = history_id
 
-    app.logger.info(f"Processing histories: {histories}")
+    app.logger.info(f"Processing histories: {histories} with history ID: {CURRENT_HISTORY_ID}")
     if 'history' not in histories:
         # no new messages
         return
