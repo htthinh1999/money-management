@@ -65,8 +65,7 @@ def receive_pubsub_message():
         if envelope and 'message' in envelope:
             pubsub_message = envelope['message']
             data = base64.b64decode(pubsub_message['data']).decode("utf-8")
-            message = f"Data from Pub/Sub: {data}"
-            app.logger.info(message)
+            app.logger.info(f"Data from Pub/Sub: {data}")
             # Assuming the data is JSON
             gmail_data = json.loads(data)
             # Process the Gmail data here
