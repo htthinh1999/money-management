@@ -3,7 +3,7 @@ resource "google_cloud_scheduler_job" "scheduler_gmail_watch" {
   name             = "gmail-watch"
   description      = "This is a job to trigger Gmail watch API to watch for new emails"
   schedule         = "0 7 * * */1"
-  time_zone        = "Asia/Vietnam"
+  time_zone        = "Asia/Ho_Chi_Minh"
   attempt_deadline = "320s"
   region           = "asia-southeast1"
 
