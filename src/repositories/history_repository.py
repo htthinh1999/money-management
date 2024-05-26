@@ -8,6 +8,5 @@ def set_current_history_id(current_history_id):
 def get_current_history_id():
     mongo_client = database.get_mongo_client()
     db = mongo_client['money-management']
-    history = db.history.find_one()
-    current_history_id = history.current_history_id
+    current_history_id = db.history.find_one()['current_history_id']
     return current_history_id
