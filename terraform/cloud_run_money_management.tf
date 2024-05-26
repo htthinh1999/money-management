@@ -10,6 +10,24 @@ data "google_secret_manager_secret_version" "telegram_money_bot_chat_id" {
   version = "latest"
 }
 
+data "google_secret_manager_secret_version" "mongo_db_host" {
+  project = var.project_id
+  secret  = "MONGO_DB_HOST"
+  version = "latest"
+}
+
+data "google_secret_manager_secret_version" "mongo_db_user" {
+  project = var.project_id
+  secret  = "MONGO_DB_USER"
+  version = "latest"
+}
+
+data "google_secret_manager_secret_version" "mongo_db_password" {
+  project = var.project_id
+  secret  = "MONGO_DB_PASSWORD"
+  version = "latest"
+}
+
 resource "google_cloud_run_v2_service" "money_management_service" {
   name         = "money-management"
   project      = var.project_id
@@ -78,6 +96,36 @@ resource "google_cloud_run_v2_service" "money_management_service" {
         value_source {
           secret_key_ref {
             secret  = data.google_secret_manager_secret_version.telegram_money_bot_chat_id.secret
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "MONGO_DB_HOST"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret_version.mongo_db_host.secret
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "MONGO_DB_USER"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret_version.mongo_db_user.secret
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "MONGO_DB_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret_version.mongo_db_password.secret
             version = "latest"
           }
         }
