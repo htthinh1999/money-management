@@ -15,13 +15,13 @@ ENV PORT 8080
 WORKDIR $APP_HOME
 
 # Copy the Python dependencies file to the working directory
-COPY requirements.txt .
+COPY ./src/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 # Copy the Flask app files to the working directory
-COPY . .
+COPY ./src .
 
 # Expose the port the app runs on
 EXPOSE $PORT

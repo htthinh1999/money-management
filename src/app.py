@@ -3,7 +3,9 @@ import base64
 import json
 import time
 import requests
-import logging
+import utils.logger as logger
+import database.database as database
+import repositories.history_repository as history_repository
 from flask import Flask, request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -11,8 +13,8 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 app = Flask(__name__)
-# Configure logging
-logging.basicConfig(level=logging.INFO,format='[%(asctime)s] [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %I:%M:%S')
+logger.init(app)
+database.init()
 
 # Load environment variables
 env_vars = os.environ
@@ -57,9 +59,8 @@ def watch():
     gmail = build_gmail_service()
     watch = gmail.users().watch(userId='me', body=request).execute()
     history_id = watch['historyId']
-    global CURRENT_HISTORY_ID
-    CURRENT_HISTORY_ID = history_id
-    app.logger.info(f"Watch started with history ID: {history_id}")
+    set_current_history_id(history_id)
+    logger.info(f"Watch started with history ID: {history_id}")
     return f"Watch started with history ID: {history_id}", 200
 
 @app.route('/webhook', methods=['POST'])
@@ -69,7 +70,7 @@ def receive_pubsub_message():
         if envelope and 'message' in envelope:
             pubsub_message = envelope['message']
             data = base64.b64decode(pubsub_message['data']).decode("utf-8")
-            app.logger.info(f"Data from Pub/Sub: {data}")
+            logger.info(f"Data from Pub/Sub: {data}")
             # Assuming the data is JSON
             gmail_data = json.loads(data)
             # Process the Gmail data here
@@ -84,19 +85,20 @@ def process_gmail_data(gmail_data):
     # Extract relevant information from Gmail Pub/Sub data
     email_address = gmail_data.get('emailAddress', '')
     history_id = gmail_data.get('historyId', '')
-    app.logger.info(f"Received email from {email_address} with history ID: {history_id}")
+    logger.info(f"Received email from {email_address} with history ID: {history_id}")
 
     # Fetch the email details
     gmail = build_gmail_service()
 
     global CURRENT_HISTORY_ID
+    CURRENT_HISTORY_ID = history_repository.get_current_history_id()
     if CURRENT_HISTORY_ID == 0:
         watch()
 
     histories = gmail.users().history().list(userId='me', startHistoryId=CURRENT_HISTORY_ID).execute()
-    CURRENT_HISTORY_ID = history_id
+    set_current_history_id(history_id)
 
-    app.logger.info(f"Processing histories: {histories} with history ID: {CURRENT_HISTORY_ID}")
+    logger.info(f"Processing histories: {histories} with history ID: {CURRENT_HISTORY_ID}")
     if 'history' not in histories:
         # no new messages
         return
@@ -112,7 +114,7 @@ def process_gmail_data(gmail_data):
                 continue
             message_id = message['message']['id']
             email = gmail.users().messages().get(userId='me', id=message_id).execute()
-            # app.logger.info(f"Processing email: {email}")
+            # logger.info(f"Processing email: {email}")
             subject = ''
             from_email = ''
             if 'payload' not in email:
@@ -150,7 +152,7 @@ def process_gmail_data(gmail_data):
             # convert cost to string with dot separator
             cost = "{:,}".format(cost)
             message = f"{subject}: <b>{cost}</b> VND"
-            app.logger.info(message)
+            logger.info(message)
             if len(message) > 4096:
                 for x in range(0, len(message), 4096):
                     send_telegram_message(message[x:x+4096])
@@ -169,7 +171,13 @@ def send_telegram_message(message):
     }
     response = requests.post(url, json=params)
     if response.status_code != 200:
-        app.logger.error(f"Failed to send Telegram message: {response.text}")
+        logger.error(f"Failed to send Telegram message: {response.text}")
+
+def set_current_history_id(history_id):
+    global CURRENT_HISTORY_ID
+    CURRENT_HISTORY_ID = history_id
+    history_repository.set_current_history_id(history_id)
+    return CURRENT_HISTORY_ID
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
