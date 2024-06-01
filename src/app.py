@@ -140,28 +140,42 @@ def process_gmail_data(gmail_data):
                 continue
             mail_body = email['payload']['body']['data']
             mail_html = base64.urlsafe_b64decode(mail_body).decode('utf-8')
+            # process mail html
+            cost = cost_convert(get_value_from_mail_html_with_i_tag(mail_html, "Amount"))
+            details_of_payment = get_value_from_mail_html_with_i_tag(mail_html, "Details of Payment")
+            beneficiary_name = get_value_from_mail_html_with_i_tag(mail_html, "Beneficiary Name")
+            message = f"{subject} - {beneficiary_name}: <b>{cost}</b> VND\n{details_of_payment}"
+            send_telegram(message)
 
-            # find first text match 'VND' in html
-            cost_end_pos = mail_html.find('VND')
-            # find last text match '>' in html end with 'VND'
-            cost_start_pos = mail_html.rfind('>', 0, cost_end_pos)
-            # get cost value
-            cost = mail_html[cost_start_pos+1:cost_end_pos]
-            # convert cost to number
-            cost = int(cost.replace(',', ''))
-            # convert cost to string with dot separator
-            cost = "{:,}".format(cost)
-            message = f"{subject}: <b>{cost}</b> VND"
-            logger.info(message)
-            if len(message) > 4096:
-                for x in range(0, len(message), 4096):
-                    send_telegram_message(message[x:x+4096])
-                    # delay 1 second to avoid telegram rate limit
-                    time.sleep(1)
-                else:
-                    send_telegram_message(message)
-            else:
-                send_telegram_message(message)
+def get_value_from_mail_html_with_i_tag(mail_html, tag_value):
+    # find first text match '<i>{tag_value}</i>' in html
+    tag_start_pos = mail_html.find(f'<i>{tag_value}</i>')
+    # find first open td tag after tag_value
+    tag_start_pos = mail_html.find('<td', tag_start_pos)
+    # find first text match '>' after tag_value
+    tag_start_pos = mail_html.find('>', tag_start_pos)
+    # find first close td tag after tag_value
+    tag_end_pos = mail_html.find('</td>', tag_start_pos)
+    # get tag value
+    tag_value = mail_html[tag_start_pos+1:tag_end_pos]
+    return tag_value
+
+def cost_convert(cost_text):
+    cost = int(cost_text.replace(' VND', '').replace(',', ''))
+    # convert cost to string with dot separator
+    cost = "{:,}".format(cost)
+    return cost
+
+def send_telegram(message):
+    if len(message) > 4096:
+        for x in range(0, len(message), 4096):
+            send_telegram_message(message[x:x+4096])
+            # delay 1 second to avoid telegram rate limit
+            time.sleep(1)
+        else:
+            send_telegram_message(message)
+    else:
+        send_telegram_message(message)
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage?parse_mode=HTML"
