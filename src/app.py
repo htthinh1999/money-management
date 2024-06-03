@@ -1,9 +1,8 @@
 import os
 import base64
 import json
-import time
-import requests
 import utils.logger as logger
+import utils.telegram as telegram
 import database.database as database
 import repositories.history_repository as history_repository
 import repositories.daily_repository as daily_repository
@@ -152,7 +151,11 @@ def process_gmail_data(gmail_data):
             daily_repository.store_daily_money(cost, beneficiary_name, details_of_payment, trans_date, trans_time)
             # send telegram message
             message = f"{subject} - {beneficiary_name}: <b>{cost}</b> VND\n{details_of_payment}"
-            send_telegram(message)
+            # telegram.send_telegram_long_message(message)
+            # send telegram poll
+            question = f"💵{cost} chi cho?"
+            options = ["🍕 Ăn", "☕ Cà phê", "💫 Khác"]
+            telegram.send_telegram_poll(question, options)
 
 def get_value_from_mail_html_with_i_tag(mail_html, tag_value):
     # find first text match '<i>{tag_value}</i>' in html
@@ -188,27 +191,6 @@ def date_from_trans_date_time(trans_date_time, trans_time: bool = False):
         time = time + ':00'
         # combine date and time
         date = date + ' ' + time
-
-def send_telegram(message):
-    if len(message) > 4096:
-        for x in range(0, len(message), 4096):
-            send_telegram_message(message[x:x+4096])
-            # delay 1 second to avoid telegram rate limit
-            time.sleep(1)
-        else:
-            send_telegram_message(message)
-    else:
-        send_telegram_message(message)
-
-def send_telegram_message(message):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage?parse_mode=HTML"
-    params = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message
-    }
-    response = requests.post(url, json=params)
-    if response.status_code != 200:
-        logger.error(f"Failed to send Telegram message: {response.text}")
 
 def set_current_history_id(history_id):
     global CURRENT_HISTORY_ID
