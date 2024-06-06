@@ -10,6 +10,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
+from money_management.services import telegram_service
 
 # Load environment variables
 env_vars = os.environ
@@ -27,6 +28,16 @@ CURRENT_HISTORY_ID = 0
 @app.route("/healthz", methods=["GET"])
 def health_check():
     return "Healthy", 200
+
+
+@app.route("/telegram-update", methods=["POST"])
+def receive_telegram_update():
+    if request.method == "POST":
+        update_data = request.get_json()
+        telegram_service.process_telegram_update(update_data)
+        return "Telegram update received", 200
+    else:
+        return "Method not allowed", 405
 
 
 def build_gmail_service():
