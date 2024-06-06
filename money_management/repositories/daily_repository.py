@@ -7,7 +7,7 @@ def store_daily_money(amount, beneficiary, description, trans_date, trans_time):
         "amount": amount,
         "beneficiary": beneficiary,
         "description": description,
-        "category": Category.Other.value,
+        "category": Category.Other.name,
         "date": trans_date,
         "time": trans_time,
     }

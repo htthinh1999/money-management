@@ -18,7 +18,7 @@ def process_telegram_update(update_data):
         if poll_message is None:
             return
         daily_id = poll_message["daily_id"]
-        daily_data = daily_repository.update_category(daily_id, category.value)
+        daily_data = daily_repository.update_category(daily_id, category.name)
         telegram.delete_message(poll_message["message_id"])
         message = f"💵{daily_data['amount']} chi cho `{category.value}`\n{daily_data['beneficiary']} - {daily_data['description']}"
         telegram.send_message(message)
