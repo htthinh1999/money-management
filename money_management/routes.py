@@ -181,11 +181,8 @@ def process_gmail_data(gmail_data):
             trans_date_time = get_value_from_mail_html_with_i_tag(
                 mail_html, "Trans. Date, Time"
             )
-            app.logger.info(f"Trans Date Time: {trans_date_time}")
             trans_date = date_from_trans_date_time(trans_date_time)
-            app.logger.info(f"Trans Date: {trans_date}")
             trans_time = date_from_trans_date_time(trans_date_time, trans_time=True)
-            app.logger.info(f"Trans Time: {trans_time}")
             # store daily money
             daily_id = daily_repository.store_daily_money(
                 cost, beneficiary_name, details_of_payment, trans_date, trans_time
@@ -240,6 +237,7 @@ def date_from_trans_date_time(trans_date_time, trans_time: bool = False):
         time = time + ":00"
         # combine date and time
         date = date + " " + time
+    return date
 
 
 def set_current_history_id(history_id):
