@@ -181,8 +181,11 @@ def process_gmail_data(gmail_data):
             trans_date_time = get_value_from_mail_html_with_i_tag(
                 mail_html, "Trans. Date, Time"
             )
+            app.logger.info(f"Trans Date Time: {trans_date_time}")
             trans_date = date_from_trans_date_time(trans_date_time)
+            app.logger.info(f"Trans Date: {trans_date}")
             trans_time = date_from_trans_date_time(trans_date_time, trans_time=True)
+            app.logger.info(f"Trans Time: {trans_time}")
             # store daily money
             daily_id = daily_repository.store_daily_money(
                 cost, beneficiary_name, details_of_payment, trans_date, trans_time
@@ -199,9 +202,11 @@ def process_gmail_data(gmail_data):
             )
 
 
-def get_value_from_mail_html_with_i_tag(mail_html, tag_value):
+def get_value_from_mail_html_with_i_tag(mail_html: str, tag_value: str):
     # find first text match '<i>{tag_value}</i>' in html
     tag_start_pos = mail_html.find(f"<i>{tag_value}</i>")
+    if tag_start_pos == -1:
+        tag_start_pos = mail_html.find(f"<i>{tag_value} </i>")
     # find first open td tag after tag_value
     tag_start_pos = mail_html.find("<td", tag_start_pos)
     # find first text match '>' after tag_value
