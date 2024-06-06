@@ -10,3 +10,13 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    environment:
+      - BROWSER=chrome
+      - GOOGLE_CREDENTIALS_FILE=credentials.json
+      - GOOGLE_TOKEN_FILE=token.json
+      - GOOGLE_PUBSUB_TOPIC=projects/keycode-mon/topics/TOPIC_MONEY_MANAGEMENT
+      - TELEGRAM_BOT_TOKEN=710286147:AAEnTupgQmHH-tKwxTBDIXXQQkNYbVl1rYQ
+      - TELEGRAM_CHAT_ID=1270578204
+      - MONGO_DB_HOST=money-management.m8r199h.mongodb.net
+      - MONGO_DB_USER=admin
+      - MONGO_DB_PASSWORD=9KGTSOk7SN4ddpoG
