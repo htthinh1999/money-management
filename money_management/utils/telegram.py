@@ -10,19 +10,19 @@ TELEGRAM_BOT_TOKEN = env_vars.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = env_vars.get("TELEGRAM_CHAT_ID")
 
 
-def send_telegram_long_message(message):
+def send_long_message(message):
     if len(message) > 4096:
         for x in range(0, len(message), 4096):
-            send_telegram_message(message[x : x + 4096])
+            send_message(message[x : x + 4096])
             # delay 1 second to avoid telegram rate limit
             time.sleep(1)
         else:
-            send_telegram_message(message)
+            send_message(message)
     else:
-        send_telegram_message(message)
+        send_message(message)
 
 
-def send_telegram_message(message):
+def send_message(message):
     url = (
         f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage?parse_mode=HTML"
     )
@@ -32,7 +32,7 @@ def send_telegram_message(message):
         app.logger.error(f"Failed to send Telegram message: {response.text}")
 
 
-def send_telegram_poll(question, options):
+def send_poll(question, options):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPoll"
     params = {
         "chat_id": TELEGRAM_CHAT_ID,
@@ -44,9 +44,10 @@ def send_telegram_poll(question, options):
     response = requests.post(url, json=params)
     if response.status_code != 200:
         app.logger.error(f"Failed to send Telegram poll: {response.text}")
+    return response.json()["result"]
 
 
-def delete_telegram(message_id):
+def delete_message(message_id):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/deleteMessage"
     params = {"chat_id": TELEGRAM_CHAT_ID, "message_id": message_id}
     response = requests.post(url, json=params)

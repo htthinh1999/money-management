@@ -3,9 +3,11 @@ import base64
 import json
 from flask import request
 from money_management import app
+from money_management.shared.category import Category
 from money_management.utils import telegram
 from money_management.repositories import history_repository
 from money_management.repositories import daily_repository
+from money_management.repositories import telegram_poll_message_repository
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
@@ -182,16 +184,19 @@ def process_gmail_data(gmail_data):
             trans_date = date_from_trans_date_time(trans_date_time)
             trans_time = date_from_trans_date_time(trans_date_time, trans_time=True)
             # store daily money
-            daily_repository.store_daily_money(
+            daily_id = daily_repository.store_daily_money(
                 cost, beneficiary_name, details_of_payment, trans_date, trans_time
             )
             # send telegram message
             message = f"{subject} - {beneficiary_name}: <b>{cost}</b> VND\n{details_of_payment}"
-            # telegram.send_telegram_long_message(message)
+            # telegram.send_long_message(message)
             # send telegram poll
             question = f"💵{cost} chi cho?"
-            options = ["🍕 Ăn", "☕ Cà phê", "💫 Khác"]
-            telegram.send_telegram_poll(question, options)
+            options = [category.value for category in Category]
+            poll = telegram.send_poll(question, options)
+            telegram_poll_message_repository.store_poll_message(
+                poll["message_id"], poll["poll"]["id"], daily_id
+            )
 
 
 def get_value_from_mail_html_with_i_tag(mail_html, tag_value):
