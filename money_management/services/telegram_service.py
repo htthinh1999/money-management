@@ -43,12 +43,12 @@ def process_message(message):
     text: str = message["text"]
     if text == "/start":
         telegram.send_message("Chào bạn, mình là bot quản lý chi tiêu")
-    # elif text.startswith("/report_detail"):
-    #     month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
-    #     month_report_detail(month)
-    # elif text.startswith("/report"):
-    #     month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
-    #     month_report(month)
+    elif text.startswith("/report_detail"):
+        month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
+        month_report_detail(month)
+    elif text.startswith("/report"):
+        month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
+        month_report(month)
     else:
         telegram.send_message("Mình không hiểu bạn muốn gì, hãy thử lại")
 
@@ -70,6 +70,7 @@ def month_report(month: str):
 def prepare_month_report_message(daily_list: list[Daily]):
     message = f"Chi tiêu từng ngày:\n"
     message = f"{message}{'-' * 41}\n"
+    daily_list = daily_list or []
     # sort daily by date
     daily_list.sort(key=lambda x: x.date)
     # group daily by date
@@ -97,7 +98,7 @@ def month_report_detail(month: str):
     message = f"Tổng chi tiêu tháng `{month}`: <b>{total:,}</b>\n"
     telegram.send_message(message)
     daily_list = month_report.daily_list
-    daily_list = daily_list.sort(key=lambda x: x.date)
+    daily_list.sort(key=lambda x: x.date)
     # group daily by date
     daily_group_by_date = {}
     for daily in daily_list:
@@ -110,6 +111,7 @@ def month_report_detail(month: str):
 
 
 def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily]):
+    daily_group = daily_group or []
     daily_group = daily_group.sort(key=lambda x: x.time)
     total_amount = sum([daily.amount for daily in daily_group])
     message = f"{message}{'-' * 41}\n"
