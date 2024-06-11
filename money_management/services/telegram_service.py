@@ -109,9 +109,9 @@ def month_report_detail(month: str):
     for daily_date, daily_group in daily_group_by_date.items():
         message = {prepare_month_report_detail_message(daily_date, daily_group)}
         app.logger.info(f"message: {message}")
-        telegram.send_message(message)
+        # telegram.send_message(message)
         # delay 1s to send next message
-        time.sleep(1)
+        # time.sleep(1)
 
 
 def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily]):
