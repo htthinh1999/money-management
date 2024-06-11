@@ -118,7 +118,6 @@ def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily
     message = f"Chi tiêu ngày `{daily_date}`: <b>{total_amount}</b>\n"
     message = f"{message}{'-' * 41}\n"
     for daily in daily_group:
-        message = f"{message}{daily.time}{' ' * 5}{daily.amount:,}{' ' * 5}{get_category_by_string(daily.category).value}\n"
-    message = f"{message}{'-' * 41}"
+        message = f"{message}{daily.time}{' ' * 5}{daily.amount:,}{' ' * 5}{daily.categorye}\n"
 
     return message
