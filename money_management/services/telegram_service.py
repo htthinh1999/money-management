@@ -43,12 +43,12 @@ def process_message(message):
     text: str = message["text"]
     if text == "/start":
         telegram.send_message("Chào bạn, mình là bot quản lý chi tiêu")
-    # elif text.startswith("/report_detail"):
-    #     month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
-    #     month_report_detail(month)
-    # elif text.startswith("/report"):
-    #     month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
-    # month_report(month)
+    elif text.startswith("/report_detail"):
+        month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
+        month_report_detail(month)
+    elif text.startswith("/report"):
+        month = text.split(" ")[1] if len(text.split(" ")) > 1 else None
+        month_report(month)
     else:
         telegram.send_message("Mình không hiểu bạn muốn gì, hãy thử lại")
 
@@ -112,7 +112,7 @@ def month_report_detail(month: str):
 
 def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily]):
     daily_group = daily_group or []
-    daily_group = daily_group.sort(key=lambda x: x.time)
+    daily_group.sort(key=lambda x: x.time)
     total_amount = sum([daily.amount for daily in daily_group])
     message = f"{message}{'-' * 41}\n"
     message = f"Chi tiêu ngày `{daily_date}`: <b>{total_amount}</b>\n"
