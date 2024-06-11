@@ -109,7 +109,7 @@ def month_report_detail(month: str):
     for daily_date, daily_group in daily_group_by_date.items():
         message = {prepare_month_report_detail_message(daily_date, daily_group)}
         app.logger.info(f"message: {message}")
-        # telegram.send_message(message)
+        telegram.send_message(message)
         # delay 1s to send next message
         # time.sleep(1)
 
@@ -119,7 +119,7 @@ def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily
     daily_group.sort(key=lambda x: x.time)
     total_amount = sum([daily.amount for daily in daily_group])
     message = f"{'-' * 41}\n"
-    message = f"Chi tiêu ngày `{daily_date}`: <b>{total_amount:,}</b>\n"
+    message = f"Chi tiêu ngày {daily_date}: <b>{total_amount:,}</b>\n"
     message = f"{message}{'-' * 41}\n"
     for daily in daily_group:
         message = f"{message}{daily.time[-8:][:5]}{' ' * 5}{daily.amount:<15,}{daily.category}\n"
