@@ -9,3 +9,7 @@ class Category(Enum):
 
 def get_category_by_index(index):
     return list(Category)[index]
+
+
+def get_category_by_string(category):
+    return Category[category]
