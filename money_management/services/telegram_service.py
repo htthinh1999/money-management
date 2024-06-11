@@ -114,7 +114,7 @@ def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily
     daily_group = daily_group or []
     daily_group.sort(key=lambda x: x.time)
     total_amount = sum([daily.amount for daily in daily_group])
-    message = f"{message}{'-' * 41}\n"
+    message = f"{'-' * 41}\n"
     message = f"Chi tiêu ngày `{daily_date}`: <b>{total_amount}</b>\n"
     message = f"{message}{'-' * 41}\n"
     for daily in daily_group:
