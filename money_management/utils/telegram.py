@@ -23,9 +23,7 @@ def send_long_message(message):
 
 
 def send_message(message):
-    url = (
-        f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage?parse_mode=HTML"
-    )
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage?parse_mode=markdown"
     params = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
     response = requests.post(url, json=params)
     if response.status_code != 200:

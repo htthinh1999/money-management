@@ -1,5 +1,4 @@
 from datetime import datetime
-import time
 from money_management import app
 from money_management.repositories import (
     daily_repository,
@@ -63,7 +62,7 @@ def month_report(month: str):
     )
     month_report = MonthReport(report)
     total = month_report.total
-    message = f"Tổng chi tiêu tháng `{month}`: <b>{total:,}</b>\n"
+    message = f"Tổng chi tiêu tháng `{month}`: *{total:,}*\n"
     message = f"{message}{prepare_month_report_message(month_report.daily_list)}"
     telegram.send_message(message)
 
@@ -96,7 +95,7 @@ def month_report_detail(month: str):
     )
     month_report = MonthReport(report)
     total = month_report.total
-    message = f"Tổng chi tiêu tháng `{month}`: <b>{total:,}</b>\n"
+    message = f"Tổng chi tiêu tháng `{month}`: *{total:,}*\n"
     telegram.send_message(message)
     daily_list = month_report.daily_list
     daily_list.sort(key=lambda x: x.date)
@@ -116,7 +115,7 @@ def prepare_month_report_detail_message(daily_date: str, daily_group: list[Daily
     daily_group.sort(key=lambda x: x.time)
     total_amount = sum([daily.amount for daily in daily_group])
     message = f"{'-' * 41}\n"
-    message = f"Chi tiêu ngày `{daily_date}`: <b>{total_amount:,}</b>\n"
+    message = f"Chi tiêu ngày `{daily_date}`: *{total_amount:,}*\n"
     message = f"{message}{'-' * 41}\n"
     for daily in daily_group:
         message = f"{message}{daily.time[-8:][:5]}{' ' * 5}{daily.amount:<15,}{get_category_by_string(daily.category).value}\n"
