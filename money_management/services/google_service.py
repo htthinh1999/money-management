@@ -13,8 +13,23 @@ from money_management.repositories import history_repository
 from money_management.repositories import telegram_poll_message_repository
 
 
+def valid_state(state: str | None):
+    return gmail.valid_state(state)
+
+
+def process_callback(args):
+    gmail.process_callback(args)
+
+
 def gmail_watch():
-    history_id = gmail.watch()
+    data = gmail.watch()
+    # validate data is digit
+    if not data.isdigit():
+        # this is authorization url
+        return data
+
+    # this is history id
+    history_id = data
     history_repository.set_current_history_id(history_id)
     return history_id
 

@@ -1,6 +1,6 @@
 import base64
 import json
-from flask import request
+from flask import redirect, request
 from money_management import app
 from money_management.services import telegram_service
 from money_management.services import google_service
@@ -15,9 +15,30 @@ def health_check():
 
 @app.route("/watch", methods=["GET"])
 def watch():
-    history_id = google_service.gmail_watch()
+    data = google_service.gmail_watch()
+    # validate data is digit
+    if not data.isdigit():
+        # this is authorization url
+        app.logger.info(
+            f"Watch started but we didn't authenticate, redirect to Google OAuth: {data}"
+        )
+        return redirect(data)
+    # this is history id
+    history_id = data
     app.logger.info(f"Watch started with history ID: {history_id}")
     return f"Watch started with history ID: {history_id}", 200
+
+
+@app.route("/google-callback", methods=["GET"])
+def callback():
+    # Verify state to prevent CSRF attacks
+    if not google_service.valid_state(request.args.get("state")):
+        return "Invalid state parameter", 400
+    # Process Google OAuth callback
+    google_service.process_callback(request.args)
+    app.logger.info("Google OAuth callback processed")
+    # Redirect to watch
+    return redirect("/watch")
 
 
 @app.route("/webhook", methods=["POST"])

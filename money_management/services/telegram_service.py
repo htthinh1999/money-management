@@ -53,7 +53,7 @@ def process_message(message):
         telegram.send_message("Mình không hiểu bạn muốn gì, hãy thử lại")
 
 
-def month_report(month: str):
+def month_report(month: str | None):
     if month is None or not valid_year_month(month):
         month = datetime.now().strftime("%Y-%m")
 
@@ -86,7 +86,7 @@ def prepare_month_report_message(daily_list: list[Daily]):
     return message
 
 
-def month_report_detail(month: str):
+def month_report_detail(month: str | None):
     if month is None or not valid_year_month(month):
         month = datetime.now().strftime("%Y-%m")
 
