@@ -14,7 +14,7 @@ if provider() == "gcp":
     import google.cloud.logging
 
     client = google.cloud.logging.Client()
-    client.get_default_handler()
+    logging.getLogger().handlers = [client.get_default_handler()]
     client.setup_logging()
 
 from money_management import database
