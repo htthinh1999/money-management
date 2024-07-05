@@ -19,7 +19,7 @@ def watch():
     # validate data is digit
     if not data.isdigit():
         # this is authorization url
-        app.logger.info(
+        app.logger.warning(
             f"Watch started but we didn't authenticate, redirect to Google OAuth: {data}"
         )
         return redirect(data)
