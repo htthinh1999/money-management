@@ -1,3 +1,21 @@
+data "google_secret_manager_secret_version" "google_oauth_state" {
+  project = var.project_id
+  secret  = "GOOGLE_OAUTH_STATE"
+  version = "latest"
+}
+
+data "google_secret_manager_secret_version" "google_oauth_code_verifier" {
+  project = var.project_id
+  secret  = "GOOGLE_OAUTH_CODE_VERIFIER"
+  version = "latest"
+}
+
+data "google_secret_manager_secret_version" "google_oauth_redirect_uri" {
+  project = var.project_id
+  secret  = "GOOGLE_OAUTH_REDIRECT_URI"
+  version = "latest"
+}
+
 data "google_secret_manager_secret_version" "telegram_money_bot_token" {
   project = var.project_id
   secret  = "TELEGRAM_MONEY_BOT_TOKEN"
@@ -76,11 +94,6 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       }
 
       env {
-        name  = "BROWSER"
-        value = "chrome"
-      }
-
-      env {
         name  = "GOOGLE_CREDENTIALS_FILE"
         value = "credentials.json"
       }
@@ -93,6 +106,36 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       env {
         name  = "GOOGLE_PUBSUB_TOPIC"
         value = "projects/keycode-mon/topics/TOPIC_MONEY_MANAGEMENT"
+      }
+
+      env {
+        name = "GOOGLE_OAUTH_STATE"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret_version.google_oauth_state.secret
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "GOOGLE_OAUTH_CODE_VERIFIER"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret_version.google_oauth_code_verifier.secret
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "GOOGLE_OAUTH_REDIRECT_URI"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret_version.google_oauth_redirect_uri.secret
+            version = "latest"
+          }
+        }
       }
 
       env {
