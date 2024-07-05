@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 from flask import redirect, request
 from money_management import app
 from money_management.services import telegram_service
@@ -19,13 +20,13 @@ def watch():
     # validate data is digit
     if not data.isdigit():
         # this is authorization url
-        app.logger.warning(
+        logging.warning(
             f"Watch started but we didn't authenticate, redirect to Google OAuth: {data}"
         )
         return redirect(data)
     # this is history id
     history_id = data
-    app.logger.info(f"Watch started with history ID: {history_id}")
+    logging.info(f"Watch started with history ID: {history_id}")
     return f"Watch started with history ID: {history_id}", 200
 
 
@@ -36,7 +37,7 @@ def callback():
         return "Invalid state parameter", 400
     # Process Google OAuth callback
     google_service.process_callback(request.args)
-    app.logger.info("Google OAuth callback processed")
+    logging.info("Google OAuth callback processed")
     # Redirect to watch
     return redirect("/watch")
 
@@ -48,7 +49,7 @@ def receive_pubsub_message():
         if envelope and "message" in envelope:
             pubsub_message = envelope["message"]
             data = base64.b64decode(pubsub_message["data"]).decode("utf-8")
-            app.logger.info(f"Data from Pub/Sub: {data}")
+            logging.info(f"Data from Pub/Sub: {data}")
             # Assuming the data is JSON
             gmail_data = json.loads(data)
             # Process the Gmail data here

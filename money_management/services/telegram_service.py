@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from money_management import app
 from money_management.repositories import (
@@ -15,7 +16,7 @@ from money_management.utils.common import valid_year_month
 
 
 def process_telegram_update(update_data):
-    app.logger.info(f"Processing Telegram update: {update_data}")
+    logging.info(f"Processing Telegram update: {update_data}")
     if "poll_answer" in update_data:
         poll_answer = update_data["poll_answer"]
         process_poll_answer(poll_answer)

@@ -1,4 +1,5 @@
 import os
+import logging
 from money_management import app
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -74,7 +75,7 @@ def process_callback(args):
     creds = flow.credentials
     with open(GOOGLE_TOKEN_FILE, "w") as token:
         token.write(creds.to_json())
-    app.logger.info("Google OAuth token saved")
+    logging.info("Google OAuth token saved")
 
 
 def watch() -> str:
@@ -93,7 +94,7 @@ def watch() -> str:
 def get_histories(history_id):
     (gmail, authorization_url) = init()
     if gmail is None:
-        app.logger.error("Gmail service is not initialized")
+        logging.error("Gmail service is not initialized")
         return {"history": []}
 
     histories = (
@@ -105,7 +106,7 @@ def get_histories(history_id):
 def get_message(message_id):
     (gmail, authorization_url) = init()
     if gmail is None:
-        app.logger.error("Gmail service is not initialized")
+        logging.error("Gmail service is not initialized")
         return []
     message = gmail.users().messages().get(userId="me", id=message_id).execute()
     return message

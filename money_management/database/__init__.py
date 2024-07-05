@@ -1,4 +1,5 @@
 import os
+import logging
 from money_management import app
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -17,7 +18,7 @@ database = None
 # Send a ping to confirm a successful connection
 try:
     mongo_client.admin.command("ping")
-    app.logger.info(f"Successfully connected to MongoDB!")
+    logging.info(f"Successfully connected to MongoDB!")
     database = mongo_client["money-management"]
 except Exception as e:
-    app.logger.error(e)
+    logging.error(e)

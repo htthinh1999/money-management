@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+import logging
 from money_management import app
 
 
@@ -27,7 +28,7 @@ def send_message(message):
     params = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
     response = requests.post(url, json=params)
     if response.status_code != 200:
-        app.logger.error(f"Failed to send Telegram message: {response.text}")
+        logging.error(f"Failed to send Telegram message: {response.text}")
 
 
 def send_poll(question, options):
@@ -41,7 +42,7 @@ def send_poll(question, options):
     }
     response = requests.post(url, json=params)
     if response.status_code != 200:
-        app.logger.error(f"Failed to send Telegram poll: {response.text}")
+        logging.error(f"Failed to send Telegram poll: {response.text}")
     return response.json()["result"]
 
 
@@ -50,4 +51,4 @@ def delete_message(message_id):
     params = {"chat_id": TELEGRAM_CHAT_ID, "message_id": message_id}
     response = requests.post(url, json=params)
     if response.status_code != 200:
-        app.logger.error(f"Failed to delete Telegram message: {response.text}")
+        logging.error(f"Failed to delete Telegram message: {response.text}")
