@@ -12,7 +12,7 @@ GOOGLE_OAUTH_STATE = env_vars.get("GOOGLE_OAUTH_STATE")
 GOOGLE_OAUTH_CODE_VERIFIER = env_vars.get("GOOGLE_OAUTH_CODE_VERIFIER")
 GOOGLE_OAUTH_REDIRECT_URI = env_vars.get("GOOGLE_OAUTH_REDIRECT_URI")
 GOOGLE_CREDENTIALS_FILE = env_vars.get("GOOGLE_CREDENTIALS_FILE")
-GOOGLE_TOKEN_FILE: str = env_vars.get("GOOGLE_TOKEN_FILE") or "token.json"
+GOOGLE_TOKEN_FILE: str = env_vars.get("GOOGLE_TOKEN_FILE") or "user-token/token.json"
 GOOGLE_PUBSUB_TOPIC = env_vars.get("GOOGLE_PUBSUB_TOPIC")
 
 GMAIL_SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]

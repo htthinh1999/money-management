@@ -33,7 +33,7 @@ resource "google_cloud_run_v2_service" "money_management_service" {
   project      = var.project_id
   location     = var.region
   ingress      = "INGRESS_TRAFFIC_ALL"
-  launch_stage = "GA"
+  launch_stage = "BETA"
 
   traffic {
     type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
@@ -48,6 +48,15 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       min_instance_count = 0
       max_instance_count = 10
     }
+
+    volumes {
+      name = "gcs-money-management"
+      gcs {
+        bucket    = "money-management"
+        read_only = false
+      }
+    }
+
     containers {
       image = "asia-southeast1-docker.pkg.dev/keycode-mon/repository/money-management:0.0.4"
       name  = "money-management"
@@ -57,8 +66,13 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       resources {
         limits = {
           memory = "512Mi"
-          cpu    = 1
+          cpu    = "1000m"
         }
+      }
+
+      volume_mounts {
+        mount_path = "/app"
+        name       = "gcs-money-management"
       }
 
       env {
@@ -73,7 +87,7 @@ resource "google_cloud_run_v2_service" "money_management_service" {
 
       env {
         name  = "GOOGLE_TOKEN_FILE"
-        value = "token.json"
+        value = "user-token/token.json"
       }
 
       env {
