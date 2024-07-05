@@ -71,7 +71,7 @@ resource "google_cloud_run_v2_service" "money_management_service" {
       }
 
       volume_mounts {
-        mount_path = "/app"
+        mount_path = "/app/user-token"
         name       = "gcs-money-management"
       }
 

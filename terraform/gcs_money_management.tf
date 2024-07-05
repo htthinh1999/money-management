@@ -1,11 +1,9 @@
 resource "google_storage_bucket" "money-management" {
-  name          = "money-management"
-  location      = "US-WEST1"
-  force_destroy = true
-
+  name                        = "money-management"
+  location                    = "US-WEST1"
+  force_destroy               = true
   uniform_bucket_level_access = true
-
-  public_access_prevention = "enforced"
+  public_access_prevention    = "enforced"
 
   #   cors {
   #     origin          = ["http://example.com"]
@@ -22,13 +20,6 @@ resource "google_storage_bucket_iam_binding" "money-management" {
   members = [
     "allUsers",
   ]
-
-  depends_on = [google_storage_bucket.money-management]
-}
-
-resource "google_storage_managed_folder" "user-token" {
-  bucket = google_storage_bucket.money-management.name
-  name   = "user-token/"
 
   depends_on = [google_storage_bucket.money-management]
 }
