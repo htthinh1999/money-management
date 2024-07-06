@@ -35,7 +35,7 @@ def process_poll_answer(poll_answer):
     daily_id = poll_message["daily_id"]
     daily_data = daily_repository.update_category(daily_id, category.name)
     telegram.delete_message(poll_message["message_id"])
-    message = f"💵{daily_data['amount']} chi cho `{category.value}`\n{daily_data['beneficiary']} - {daily_data['description']}"
+    message = f"💵{daily_data['amount']} chi cho `{category.value}`\n{daily_data['beneficiary']} - {daily_data['description']} vào lúc {daily_data['time']}"
     telegram.send_message(message)
     telegram_poll_message_repository.delete_by_poll_id(poll_id)
 
