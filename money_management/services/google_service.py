@@ -29,6 +29,7 @@ def gmail_watch():
         return data
 
     # this is history id
+    handle_gmail_histories()
     history_id = data
     history_repository.set_current_history_id(history_id)
     return history_id
